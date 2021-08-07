@@ -40,21 +40,53 @@ class DBChessAnalizer:
         file.close()
 
     # genera l'output
-    def generate_json(self, db_file_name=None, output_name=None, max_matches=None):
+    def generate_json(self, db_file_name=None, output_name=None, max_matches=None, verbose=False):
+
+        # verbosità
+        if verbose:
+            print("Start generate...")
+
+        # verbosità
+        if verbose:
+            print("Loading input PGN file...", end="")
 
         # carico il database
         if db_file_name != None:
             self.__db_file_name = db_file_name
         self.__load(db_file_name)
 
+        # verbosità
+        if verbose:
+            print("Done")
+
+        # verbosità
+        if verbose:
+            print("Setting output file...", end="")
+
         # imposto il nome all'output
         if output_name != None:
             self.__output_name = output_name
 
+        # verbosità
+        if verbose:
+            print("Done")
+
         self.__close()      # chiudo il file contenente il db
+
+        # verbosità
+        if verbose:
+            print("Parse PGN matches...", end="")
 
         # converto le partite del database in un array
         parsed_matches = self.__parse_pgn_matches(max_matches)
+
+        # verbosità
+        if verbose:
+            print("Done")
+
+        # verbosità
+        if verbose:
+            print("Generate JSON file...", end="")
 
         # istanzio il nuovo database in formato json
         json_db = {
@@ -63,6 +95,10 @@ class DBChessAnalizer:
             "win_rates": self.__get_win_rates(parsed_matches),   # inserisco i dati statistici
             "tree": self.__generate_tree(parsed_matches, 0, 1)     # creo l'albero delle aperture
         }
+
+        # verbosità
+        if verbose:
+            print("Done")
 
         # scrivo il json nel file
         self.__write_in_file(json.dumps(json_db), self.__output_name)
@@ -435,5 +471,5 @@ class DBChessAnalizer:
 if __name__ == '__main__':
     dbca = DBChessAnalizer()
 
-    dbca.generate_json('input.pgn', max_matches=10)
+    dbca.generate_json('input.pgn', max_matches=3, verbose=True)
 
